@@ -1,189 +1,136 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
-
   <meta name="viewport"
-        content="width=device-width,
-        initial-scale=1.0,
-        maximum-scale=1.0,
-        user-scalable=no">
+        content="width=device-width, initial-scale=1.0,
+                 viewport-fit=cover">
 
-  <title>Identidade Escolar - Simulação</title>
+  <title>GOV.BR</title>
 
-  <!-- Ícone do site/app -->
-  <link rel="icon" type="image/png" sizes="600x600" href="./icone.png?v=3">
-  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png?v=3">
-
-  <!-- PWA -->
-  <link rel="manifest" href="./manifest.json?v=3">
+  <!-- Ícones -->
+  <link rel="icon" type="image/png" href="./icone.png">
+  <link rel="apple-touch-icon"
+        sizes="180x180"
+        href="./apple-touch-icon.png">
+  <link rel="manifest" href="./manifest.json">
 
   <meta name="theme-color" content="#ffffff">
-
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Identidade Escolar">
+  <meta name="apple-mobile-web-app-status-bar-style"
+        content="default">
+  <meta name="apple-mobile-web-app-title"
+        content="Simulação Escolar">
 
   <style>
-
-    *{
-      box-sizing:border-box;
+    * {
+      box-sizing: border-box;
     }
 
-    html,body{
-      width:100%;
-      height:100%;
-      margin:0;
-      padding:0;
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
     }
 
-    body{
-      background:#ffffff;
-      font-family:Arial, Helvetica, sans-serif;
-      overflow:hidden;
+    body {
+      background: #fff;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
     }
 
-    /* Tela de carregamento */
-
-    .splash{
-      position:fixed;
-      width:100%;
-      height:100%;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      background:white;
+    .splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
 
-    .imagem-entrada{position:relative;width:260px;max-width:70%;line-height:0;}
-
-    /* No celular, a imagem cobre toda a tela, sem margens brancas. */
-    @media (max-width: 767px){
-      .splash{height:100vh;height:100dvh;}
-      .imagem-entrada{width:100%;max-width:none;height:100%;overflow:hidden;}
-      .logo{width:100%;height:100%;object-fit:cover;object-position:center;}
-      .loader-pos{top:70%;}
+    .imagem-entrada {
+      position: relative;
+      width: 260px;
+      max-width: 100%;
     }
 
-    /* Logo */
-
-    .logo{
-      width:100%;
-      height:auto;
-      display:block;
+    .logo {
+      display: block;
+      width: 100%;
+      height: auto;
     }
 
-    .loader-pos{position:absolute;top:70%;left:50%;transform:translate(-50%,-50%);}
-
-    /* Carregamento */
-
-    .loader{
-      width:42px;
-      height:42px;
-
-      border:5px solid #e5e5e5;
-      border-top:5px solid #1351b4;
-
-      border-radius:50%;
-
-      animation:girar 0.8s linear infinite;
-
+    /* Bolinha centralizada horizontalmente */
+    .loader-pos {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
     }
 
-    @keyframes girar{
-      from{
-        transform:rotate(0deg);
-      }
+    .loader {
+      width: 42px;
+      height: 42px;
+      border: 5px solid #e5e5e5;
+      border-top-color: #1351b4;
+      border-radius: 50%;
+      animation: girar 0.8s linear infinite;
+    }
 
-      to{
-        transform:rotate(360deg);
+    @keyframes girar {
+      to {
+        transform: rotate(360deg);
       }
     }
 
-    /* 
-    
-      position:absolute;
-      bottom:35px;
-
-      font-size:12px;
-      font-weight:bold;
-      letter-spacing:1px;
-
-      color:#777;
-
-      opacity:0.75;
-    }
-
-  
-    /* Correção definitiva: imagem preenchendo a tela do celular */
+    /* Ajustes para celular */
     @media (max-width: 767px) {
       .splash {
-        inset: 0;
         width: 100vw;
         height: 100vh;
         height: 100dvh;
-        overflow: hidden;
       }
+
       .imagem-entrada {
         position: absolute;
         inset: 0;
         width: 100%;
-        max-width: none;
         height: 100%;
+        max-width: none;
         overflow: hidden;
       }
-      .imagem-entrada > img.logo {
-        position: absolute;
-        inset: 0;
+
+      .logo {
         width: 100%;
         height: 100%;
-        max-width: none;
         object-fit: cover;
         object-position: center;
       }
-      .loader-pos {
-        position: absolute;
-        top:70%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 2;
-      }
     }
-
   </style>
 </head>
 
 <body>
-
-  <div class="splash">
-
+  <main class="splash">
     <div class="imagem-entrada">
-      <img src="entrada.jpg" class="logo" alt="Tela de entrada">
-      <div class="loader-pos"><div class="loader"></div></div>
-    </div>
+      <img src="./entrada.jpg"
+           class="logo"
+           alt="BY~JG">
 
-    <div class="simulacao">
-  
+      <div class="loader-pos">
+        <div class="loader"
+             role="status"
+             aria-label="Carregando"></div>
+      </div>
     </div>
-
-  </div>
+  </main>
 
   <script>
-
-    /*
-    Depois de 8 segundos
-    abre sua próxima página.
-    */
-
-    setTimeout(function(){
-
-      window.location.href = "foto1.html";
-
-    },3000);
-
+    setTimeout(function () {
+      window.location.replace("./foto1.html");
+    }, 3000);
   </script>
-
 </body>
 </html>
