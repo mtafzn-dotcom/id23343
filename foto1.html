@@ -1,116 +1,261 @@
-<!DOCTYPE html>
 
-<html>
+<!DOCTYPE html>
+<html lang="pt-BR">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 <title>Menu</title>
 
 <style>
-body{
-margin:0;
-background:white;
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
-.tela{
-position:relative;
-width:100%;
-max-width:739px;
-margin:auto;
+body {
+    margin: 0;
+    background: white;
+    font-family: Arial, sans-serif;
 }
 
-.tela img{
-width:100%;
-display:block;
+.tela {
+    position: relative;
+    width: 100%;
+    max-width: 739px;
+    margin: auto;
 }
 
-.cliqueMenu{
-position:absolute;
-left:7%;
-top:51.5%;
-width:86%;
-height:5.5%;
-cursor:pointer;
-}
-
-.cliqueCarteira{
-position:absolute;
-left:6%;
-top:22%;
-width:88%;
-height:18%;
-cursor:pointer;
-display:none;
-}
-
-.cliqueMenu, .cliqueCarteira, .seta {
--webkit-tap-highlight-color: transparent;
--webkit-touch-callout: none;
--webkit-user-select: none;
-user-select: none;
-outline: none;
-}
 .tela img {
--webkit-user-select: none;
-user-select: none;
--webkit-user-drag: none;
+    width: 100%;
+    display: block;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
 }
-.seta{
-position:absolute;
-right:13%;
-bottom:11%;
-width:80px;
-height:80px;
-cursor:pointer;
-display:none;
+
+/* Todos os botões */
+.botao {
+    position: absolute;
+    background: transparent;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overflow: hidden;
+}
+
+/* Efeito cinza */
+.botao::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(120, 120, 120, 0.35);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.botao.pressionado::after {
+    opacity: 1;
+}
+
+/* Primeira tela */
+.cliqueMenu {
+    left: 7%;
+    top: 51.5%;
+    width: 86%;
+    height: 5.5%;
+}
+
+/* Carteira de Documentos */
+.cliqueCarteira {
+    left: 6%;
+    top: 22%;
+    width: 88%;
+    height: 18%;
+    display: none;
+}
+
+/* Setinha */
+.seta {
+    right: 13%;
+    bottom: 11%;
+    width: 80px;
+    height: 80px;
+    display: none;
+}
+
+/* X */
+.fechar {
+    top: 3%;
+    right: 3%;
+    width: 50px;
+    height: 50px;
+    display: none;
+}
+
+/* Botões decorativos */
+.decorativo {
+    display: none;
 }
 </style>
-
-<script>
-let fotos=[
-"foto3a.jpg",
-"foto3b.jpg",
-"foto3c.jpg",
-"foto3d.jpg"
-];
-
-let atual=0;
-
-function abrirCarteira(){
-document.getElementById("foto").src="foto2.jpg";
-document.querySelector(".cliqueMenu").style.display="none";
-document.querySelector(".cliqueCarteira").style.display="block";
-}
-
-function abrirIdentidade(){
-document.getElementById("foto").src=fotos[0];
-document.querySelector(".cliqueCarteira").style.display="none";
-document.querySelector(".seta").style.display="block";
-}
-
-function proximaFoto(){
-atual++;
-if(atual>=fotos.length){
-atual=0;
-}
-document.getElementById("foto").src=fotos[atual];
-}
-</script>
-
 </head>
 
 <body>
 
 <div class="tela">
 
-<img id="foto" src="foto1.jpg" draggable="false">
+    <img id="foto"
+         src="foto1.jpg"
+         draggable="false"
+         alt="Simulação escolar">
 
-<div class="cliqueMenu" onclick="abrirCarteira()"></div>
+    <!-- Botões de navegação -->
 
-<div class="cliqueCarteira" onclick="abrirIdentidade()"></div>
+    <div class="botao cliqueMenu"
+         onclick="abrirCarteira()"></div>
 
-<div class="seta" onclick="proximaFoto()"></div>
+    <div class="botao cliqueCarteira"
+         onclick="abrirIdentidade()"></div>
+
+    <div class="botao seta"
+         onclick="proximaFoto()"></div>
+
+    <div class="botao fechar"
+         onclick="fecharIdentidade()"></div>
+
+    <!-- Botões decorativos da primeira tela -->
+
+    <div class="botao decorativo"
+         data-tela="inicio"
+         style="top:42%;left:5%;width:90%;height:5%;">
+    </div>
+
+    <div class="botao decorativo"
+         data-tela="inicio"
+         style="top:58%;left:5%;width:90%;height:5%;">
+    </div>
+
+    <div class="botao decorativo"
+         data-tela="inicio"
+         style="top:64%;left:5%;width:90%;height:5%;">
+    </div>
+
+    <div class="botao decorativo"
+         data-tela="inicio"
+         style="top:70%;left:5%;width:90%;height:5%;">
+    </div>
+
+    <div class="botao decorativo"
+         data-tela="inicio"
+         style="top:76%;left:5%;width:90%;height:5%;">
+    </div>
 
 </div>
+
+<script>
+const fotos = [
+    "foto3a.jpg",
+    "foto3b.jpg",
+    "foto3c.jpg",
+    "foto3d.jpg"
+];
+
+let atual = 0;
+
+const foto = document.getElementById("foto");
+const menu = document.querySelector(".cliqueMenu");
+const carteira = document.querySelector(".cliqueCarteira");
+const seta = document.querySelector(".seta");
+const fechar = document.querySelector(".fechar");
+const decorativos = document.querySelectorAll(".decorativo");
+
+/* Atualiza botões decorativos */
+function atualizarDecorativos(tela) {
+    decorativos.forEach(botao => {
+        botao.style.display =
+            botao.dataset.tela === tela ? "block" : "none";
+    });
+}
+
+/* Abre Carteira de Documentos */
+function abrirCarteira() {
+    foto.src = "foto2.jpg";
+
+    menu.style.display = "none";
+    carteira.style.display = "block";
+    seta.style.display = "none";
+    fechar.style.display = "none";
+
+    atualizarDecorativos("carteira");
+}
+
+/* Abre a identidade */
+function abrirIdentidade() {
+    atual = 0;
+    foto.src = fotos[atual];
+
+    menu.style.display = "none";
+    carteira.style.display = "none";
+    seta.style.display = "block";
+    fechar.style.display = "block";
+
+    atualizarDecorativos("identidade");
+}
+
+/* Próxima foto */
+function proximaFoto() {
+    atual = (atual + 1) % fotos.length;
+    foto.src = fotos[atual];
+}
+
+/* X volta à primeira tela */
+function fecharIdentidade() {
+    atual = 0;
+    foto.src = "foto1.jpg";
+
+    menu.style.display = "block";
+    carteira.style.display = "none";
+    seta.style.display = "none";
+    fechar.style.display = "none";
+
+    atualizarDecorativos("inicio");
+}
+
+/* Efeito de toque em todos os botões */
+document.querySelectorAll(".botao").forEach(botao => {
+
+    botao.addEventListener("pointerdown", () => {
+        botao.classList.add("pressionado");
+    });
+
+    botao.addEventListener("pointerup", () => {
+        setTimeout(() => {
+            botao.classList.remove("pressionado");
+        }, 150);
+    });
+
+    botao.addEventListener("pointercancel", () => {
+        botao.classList.remove("pressionado");
+    });
+
+    botao.addEventListener("pointerleave", () => {
+        botao.classList.remove("pressionado");
+    });
+});
+
+/* Ativa os botões da primeira tela */
+atualizarDecorativos("inicio");
+
+/* Impede seleção das imagens */
+document.addEventListener("dragstart", e => {
+    e.preventDefault();
+});
+</script>
 
 </body>
 </html>
