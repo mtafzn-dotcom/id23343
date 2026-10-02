@@ -34,7 +34,8 @@ html, body {
 }
 
 .imagens.identidade {
-    touch-action: none;
+    touch-action: pan-y;
+    overscroll-behavior-x: contain;
 }
 
 .imagens img {
@@ -60,19 +61,9 @@ html, body {
     z-index: 2;
 }
 
-/* Próxima foto: tudo desliza para a direita */
-
-@keyframes sairDireita {
-    from { transform: translateX(0); }
-    to { transform: translateX(100%); }
-}
-
-@keyframes entrarEsquerda {
-    from { transform: translateX(-100%); }
-    to { transform: translateX(0); }
-}
-
-/* Foto anterior: tudo desliza para a esquerda */
+/* Próxima foto:
+   atual sai pela esquerda;
+   próxima entra pela direita. */
 
 @keyframes sairEsquerda {
     from { transform: translateX(0); }
@@ -84,12 +75,18 @@ html, body {
     to { transform: translateX(0); }
 }
 
-.saindo-direita {
-    animation: sairDireita 0.4s ease-in-out forwards;
+/* Foto anterior:
+   atual sai pela direita;
+   anterior entra pela esquerda. */
+
+@keyframes sairDireita {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
 }
 
-.entrando-esquerda {
-    animation: entrarEsquerda 0.4s ease-in-out forwards;
+@keyframes entrarEsquerda {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
 }
 
 .saindo-esquerda {
@@ -98,6 +95,14 @@ html, body {
 
 .entrando-direita {
     animation: entrarDireita 0.4s ease-in-out forwards;
+}
+
+.saindo-direita {
+    animation: sairDireita 0.4s ease-in-out forwards;
+}
+
+.entrando-esquerda {
+    animation: entrarEsquerda 0.4s ease-in-out forwards;
 }
 
 /* Áreas clicáveis */
@@ -139,7 +144,7 @@ html, body {
     height: 5.5%;
 }
 
-/* Carteira de documentos */
+/* Carteira de Documentos */
 
 .cliqueCarteira {
     left: 6%;
@@ -149,7 +154,7 @@ html, body {
     display: none;
 }
 
-/* Setinha: clicável e sem efeito cinza */
+/* Setinha clicável, sem efeito cinza */
 
 .seta {
     position: absolute;
@@ -165,7 +170,7 @@ html, body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Botão X */
+/* X para fechar */
 
 .fechar {
     top: 3%;
@@ -201,7 +206,7 @@ html, body {
         onclick="abrirCarteira()"
     ></div>
 
-    <!-- Abre identidade -->
+    <!-- Abre a identidade -->
     <div
         class="botao cliqueCarteira"
         onclick="abrirIdentidade()"
@@ -219,7 +224,7 @@ html, body {
         onclick="fecharIdentidade()"
     ></div>
 
-    <!-- Botões decorativos -->
+    <!-- Botões decorativos da primeira tela -->
 
     <div
         class="botao decorativo"
@@ -254,7 +259,7 @@ html, body {
 </div>
 
 <script>
-/* As quatro fotos da identidade */
+/* Fotos da identidade */
 
 const fotos = [
     "foto3a.jpg",
@@ -267,8 +272,8 @@ let atual = 0;
 let identidadeAberta = false;
 let animando = false;
 
-let inicioY = 0;
 let inicioX = 0;
+let inicioY = 0;
 let toqueIniciado = false;
 
 const foto = document.getElementById("foto");
@@ -282,14 +287,14 @@ const fechar = document.querySelector(".fechar");
 const decorativos =
     document.querySelectorAll(".decorativo");
 
-/* Pré-carrega as fotos */
+/* Pré-carrega as quatro fotos */
 
 fotos.forEach(src => {
     const imagem = new Image();
     imagem.src = src;
 });
 
-/* Mostra os botões de cada tela */
+/* Botões decorativos */
 
 function atualizarDecorativos(tela) {
     decorativos.forEach(botao => {
@@ -306,6 +311,8 @@ function abrirCarteira() {
     if (animando) return;
 
     identidadeAberta = false;
+    toqueIniciado = false;
+
     imagens.classList.remove("identidade");
 
     foto.src = "foto2.jpg";
@@ -337,7 +344,7 @@ function abrirIdentidade() {
     atualizarDecorativos("identidade");
 }
 
-/* Troca as fotos com animação horizontal */
+/* Troca de foto com animação horizontal */
 
 function trocarFoto(direcao) {
     if (!identidadeAberta || animando) return;
@@ -357,132 +364,112 @@ function trocarFoto(direcao) {
     imagens.appendChild(nova);
 
     if (direcao === 1) {
-
         /*
-         * Próxima foto:
-         * a atual sai pela DIREITA;
-         * a próxima entra pela ESQUERDA.
-         */
-
-        foto.classList.add("saindo-direita");
-        nova.classList.add("entrando-esquerda");
-
-    } else {
-
-        /*
-         * Foto anterior:
-         * a atual sai pela ESQUERDA;
-         * a anterior entra pela DIREITA.
-         */
-
+          Próxima foto:
+          a atual sai pela ESQUERDA
+          e a nova entra pela DIREITA.
+        */
         foto.classList.add("saindo-esquerda");
         nova.classList.add("entrando-direita");
+    } else {
+        /*
+          Foto anterior:
+          a atual sai pela DIREITA
+          e a anterior entra pela ESQUERDA.
+        */
+        foto.classList.add("saindo-direita");
+        nova.classList.add("entrando-esquerda");
     }
 
     nova.addEventListener("animationend", () => {
-
         atual = proxima;
         foto.src = fotos[atual];
 
         foto.classList.remove(
-            "saindo-direita",
-            "saindo-esquerda"
+            "saindo-esquerda",
+            "saindo-direita"
         );
 
         nova.remove();
-
         animando = false;
-
     }, { once: true });
 }
 
-/* Detecta quando o dedo encosta */
+/* Arrastar horizontalmente no celular */
 
 imagens.addEventListener("touchstart", e => {
+    if (
+        !identidadeAberta ||
+        animando ||
+        e.touches.length !== 1
+    ) return;
 
-    if (!identidadeAberta || animando) return;
-    if (e.touches.length !== 1) return;
-
-    inicioY = e.touches[0].clientY;
     inicioX = e.touches[0].clientX;
+    inicioY = e.touches[0].clientY;
 
     toqueIniciado = true;
-
 }, { passive: true });
 
-/* Impede que o celular role a página durante o gesto */
+/* Evita rolagem horizontal durante o gesto */
 
 imagens.addEventListener("touchmove", e => {
-
-    if (!identidadeAberta || !toqueIniciado) return;
-
-    const movimentoY =
-        e.touches[0].clientY - inicioY;
-
-    const movimentoX =
-        e.touches[0].clientX - inicioX;
-
     if (
-        Math.abs(movimentoY) >
-        Math.abs(movimentoX)
-    ) {
+        !identidadeAberta ||
+        !toqueIniciado ||
+        e.touches.length !== 1
+    ) return;
+
+    const dx = e.touches[0].clientX - inicioX;
+    const dy = e.touches[0].clientY - inicioY;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
         e.preventDefault();
     }
-
 }, { passive: false });
 
-/* Ao soltar o dedo, troca a foto */
+/* Ao soltar o dedo, passa ou volta a foto */
 
 imagens.addEventListener("touchend", e => {
-
-    if (!identidadeAberta ||
+    if (
+        !identidadeAberta ||
         animando ||
-        !toqueIniciado) return;
+        !toqueIniciado
+    ) return;
 
     toqueIniciado = false;
 
-    const fimY =
-        e.changedTouches[0].clientY;
+    const fimX = e.changedTouches[0].clientX;
+    const fimY = e.changedTouches[0].clientY;
 
-    const fimX =
-        e.changedTouches[0].clientX;
+    const dx = fimX - inicioX;
+    const dy = fimY - inicioY;
 
-    const movimentoY = fimY - inicioY;
-    const movimentoX = fimX - inicioX;
+    /* Ignora movimentos muito pequenos */
+    if (Math.abs(dx) < 50) return;
 
-    /* Ignora gestos muito pequenos */
+    /* Ignora gestos mais verticais que horizontais */
+    if (Math.abs(dy) > Math.abs(dx)) return;
 
-    if (Math.abs(movimentoY) < 50) return;
-
-    /* Ignora movimentos predominantemente horizontais */
-
-    if (
-        Math.abs(movimentoX) >
-        Math.abs(movimentoY)
-    ) return;
-
-    if (movimentoY < 0) {
-
-        /* Arrastou para cima:
-           foto desliza para a DIREITA */
-
+    if (dx < 0) {
+        /*
+          Dedo da DIREITA para a ESQUERDA:
+          próxima foto.
+        */
         trocarFoto(1);
-
     } else {
-
-        /* Arrastou para baixo:
-           foto desliza para a ESQUERDA */
-
+        /*
+          Dedo da ESQUERDA para a DIREITA:
+          foto anterior.
+        */
         trocarFoto(-1);
     }
-
 }, { passive: true });
 
 imagens.addEventListener("touchcancel", () => {
     toqueIniciado = false;
 });
 
-/* X volta diretamente à primeira tela */
+/* X volta à primeira tela, sem loader */
 
 function fecharIdentidade() {
     if (animando) return;
@@ -503,10 +490,9 @@ function fecharIdentidade() {
     atualizarDecorativos("inicio");
 }
 
-/* Efeito cinza apenas nos outros botões */
+/* Efeito cinza nos outros botões */
 
 document.querySelectorAll(".botao").forEach(botao => {
-
     botao.addEventListener("pointerdown", () => {
         botao.classList.add("pressionado");
     });
@@ -518,11 +504,9 @@ document.querySelectorAll(".botao").forEach(botao => {
     });
 
     ["pointercancel", "pointerleave"].forEach(evento => {
-
         botao.addEventListener(evento, () => {
             botao.classList.remove("pressionado");
         });
-
     });
 });
 
