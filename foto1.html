@@ -42,6 +42,18 @@ cursor:pointer;
 display:none;
 }
 
+.cliqueMenu, .cliqueCarteira, .seta {
+-webkit-tap-highlight-color: transparent;
+-webkit-touch-callout: none;
+-webkit-user-select: none;
+user-select: none;
+outline: none;
+}
+.tela img {
+-webkit-user-select: none;
+user-select: none;
+-webkit-user-drag: none;
+}
 .seta{
 position:absolute;
 right:13%;
@@ -90,7 +102,7 @@ document.getElementById("foto").src=fotos[atual];
 
 <div class="tela">
 
-<img id="foto" src="foto1.jpg">
+<img id="foto" src="foto1.jpg" draggable="false">
 
 <div class="cliqueMenu" onclick="abrirCarteira()"></div>
 
