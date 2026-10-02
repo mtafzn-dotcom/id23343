@@ -3,9 +3,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-<title>Menu</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Identidade Escolar - Simulação</title>
 
 <style>
 * {
@@ -47,15 +46,21 @@ html, body {
     -webkit-user-drag: none;
 }
 
+#foto {
+    position: relative;
+    z-index: 1;
+}
+
 .foto-nova {
     position: absolute;
     inset: 0;
+    width: 100%;
     height: 100%;
     object-fit: fill;
     z-index: 2;
 }
 
-/* Animação horizontal */
+/* Próxima foto: tudo desliza para a direita */
 
 @keyframes sairDireita {
     from { transform: translateX(0); }
@@ -66,6 +71,8 @@ html, body {
     from { transform: translateX(-100%); }
     to { transform: translateX(0); }
 }
+
+/* Foto anterior: tudo desliza para a esquerda */
 
 @keyframes sairEsquerda {
     from { transform: translateX(0); }
@@ -93,7 +100,7 @@ html, body {
     animation: entrarDireita 0.4s ease-in-out forwards;
 }
 
-/* Botões */
+/* Áreas clicáveis */
 
 .botao {
     position: absolute;
@@ -107,13 +114,13 @@ html, body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Efeito cinza */
+/* Efeito cinza nos botões normais */
 
 .botao::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: rgba(120,120,120,0.35);
+    background: rgba(120, 120, 120, 0.35);
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -132,7 +139,7 @@ html, body {
     height: 5.5%;
 }
 
-/* Carteira */
+/* Carteira de documentos */
 
 .cliqueCarteira {
     left: 6%;
@@ -142,7 +149,7 @@ html, body {
     display: none;
 }
 
-/* Setinha sem efeito cinza */
+/* Setinha: clicável e sem efeito cinza */
 
 .seta {
     position: absolute;
@@ -158,7 +165,7 @@ html, body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* X */
+/* Botão X */
 
 .fechar {
     top: 3%;
@@ -180,54 +187,75 @@ html, body {
 <div class="tela">
 
     <div class="imagens" id="imagens">
-        <img id="foto"
-             src="foto1.jpg"
-             draggable="false"
-             alt="Simulação escolar">
+        <img
+            id="foto"
+            src="foto1.jpg"
+            draggable="false"
+            alt="Simulação escolar"
+        >
     </div>
 
-    <div class="botao cliqueMenu"
-         onclick="abrirCarteira()"></div>
+    <!-- Abre Carteira de Documentos -->
+    <div
+        class="botao cliqueMenu"
+        onclick="abrirCarteira()"
+    ></div>
 
-    <div class="botao cliqueCarteira"
-         onclick="abrirIdentidade()"></div>
+    <!-- Abre identidade -->
+    <div
+        class="botao cliqueCarteira"
+        onclick="abrirIdentidade()"
+    ></div>
 
-    <div class="seta"
-         onclick="trocarFoto(1)"></div>
+    <!-- Setinha: próxima foto -->
+    <div
+        class="seta"
+        onclick="trocarFoto(1)"
+    ></div>
 
-    <div class="botao fechar"
-         onclick="fecharIdentidade()"></div>
+    <!-- X: volta à primeira tela -->
+    <div
+        class="botao fechar"
+        onclick="fecharIdentidade()"
+    ></div>
 
     <!-- Botões decorativos -->
 
-    <div class="botao decorativo"
-         data-tela="inicio"
-         style="top:42%;left:5%;width:90%;height:5%;">
-    </div>
+    <div
+        class="botao decorativo"
+        data-tela="inicio"
+        style="top:42%;left:5%;width:90%;height:5%;"
+    ></div>
 
-    <div class="botao decorativo"
-         data-tela="inicio"
-         style="top:58%;left:5%;width:90%;height:5%;">
-    </div>
+    <div
+        class="botao decorativo"
+        data-tela="inicio"
+        style="top:58%;left:5%;width:90%;height:5%;"
+    ></div>
 
-    <div class="botao decorativo"
-         data-tela="inicio"
-         style="top:64%;left:5%;width:90%;height:5%;">
-    </div>
+    <div
+        class="botao decorativo"
+        data-tela="inicio"
+        style="top:64%;left:5%;width:90%;height:5%;"
+    ></div>
 
-    <div class="botao decorativo"
-         data-tela="inicio"
-         style="top:70%;left:5%;width:90%;height:5%;">
-    </div>
+    <div
+        class="botao decorativo"
+        data-tela="inicio"
+        style="top:70%;left:5%;width:90%;height:5%;"
+    ></div>
 
-    <div class="botao decorativo"
-         data-tela="inicio"
-         style="top:76%;left:5%;width:90%;height:5%;">
-    </div>
+    <div
+        class="botao decorativo"
+        data-tela="inicio"
+        style="top:76%;left:5%;width:90%;height:5%;"
+    ></div>
 
 </div>
 
 <script>
+/* As quatro fotos da identidade */
+
 const fotos = [
     "foto3a.jpg",
     "foto3b.jpg",
@@ -241,6 +269,7 @@ let animando = false;
 
 let inicioY = 0;
 let inicioX = 0;
+let toqueIniciado = false;
 
 const foto = document.getElementById("foto");
 const imagens = document.getElementById("imagens");
@@ -253,19 +282,29 @@ const fechar = document.querySelector(".fechar");
 const decorativos =
     document.querySelectorAll(".decorativo");
 
-/* Botões decorativos */
+/* Pré-carrega as fotos */
+
+fotos.forEach(src => {
+    const imagem = new Image();
+    imagem.src = src;
+});
+
+/* Mostra os botões de cada tela */
 
 function atualizarDecorativos(tela) {
     decorativos.forEach(botao => {
         botao.style.display =
             botao.dataset.tela === tela
-            ? "block" : "none";
+                ? "block"
+                : "none";
     });
 }
 
-/* Abre Carteira */
+/* Abre Carteira de Documentos */
 
 function abrirCarteira() {
+    if (animando) return;
+
     identidadeAberta = false;
     imagens.classList.remove("identidade");
 
@@ -282,6 +321,8 @@ function abrirCarteira() {
 /* Abre identidade */
 
 function abrirIdentidade() {
+    if (animando) return;
+
     atual = 0;
     identidadeAberta = true;
 
@@ -296,14 +337,14 @@ function abrirIdentidade() {
     atualizarDecorativos("identidade");
 }
 
-/* Troca de foto horizontal */
+/* Troca as fotos com animação horizontal */
 
 function trocarFoto(direcao) {
-
     if (!identidadeAberta || animando) return;
 
     const proxima =
-        (atual + direcao + fotos.length) % fotos.length;
+        (atual + direcao + fotos.length)
+        % fotos.length;
 
     animando = true;
 
@@ -316,14 +357,30 @@ function trocarFoto(direcao) {
     imagens.appendChild(nova);
 
     if (direcao === 1) {
+
+        /*
+         * Próxima foto:
+         * a atual sai pela DIREITA;
+         * a próxima entra pela ESQUERDA.
+         */
+
         foto.classList.add("saindo-direita");
         nova.classList.add("entrando-esquerda");
+
     } else {
+
+        /*
+         * Foto anterior:
+         * a atual sai pela ESQUERDA;
+         * a anterior entra pela DIREITA.
+         */
+
         foto.classList.add("saindo-esquerda");
         nova.classList.add("entrando-direita");
     }
 
     nova.addEventListener("animationend", () => {
+
         atual = proxima;
         foto.src = fotos[atual];
 
@@ -333,52 +390,106 @@ function trocarFoto(direcao) {
         );
 
         nova.remove();
+
         animando = false;
 
     }, { once: true });
 }
 
-/* Gesto de arrastar para cima ou baixo */
+/* Detecta quando o dedo encosta */
 
 imagens.addEventListener("touchstart", e => {
 
     if (!identidadeAberta || animando) return;
+    if (e.touches.length !== 1) return;
 
     inicioY = e.touches[0].clientY;
     inicioX = e.touches[0].clientX;
 
+    toqueIniciado = true;
+
 }, { passive: true });
+
+/* Impede que o celular role a página durante o gesto */
+
+imagens.addEventListener("touchmove", e => {
+
+    if (!identidadeAberta || !toqueIniciado) return;
+
+    const movimentoY =
+        e.touches[0].clientY - inicioY;
+
+    const movimentoX =
+        e.touches[0].clientX - inicioX;
+
+    if (
+        Math.abs(movimentoY) >
+        Math.abs(movimentoX)
+    ) {
+        e.preventDefault();
+    }
+
+}, { passive: false });
+
+/* Ao soltar o dedo, troca a foto */
 
 imagens.addEventListener("touchend", e => {
 
-    if (!identidadeAberta || animando) return;
+    if (!identidadeAberta ||
+        animando ||
+        !toqueIniciado) return;
 
-    const fimY = e.changedTouches[0].clientY;
-    const fimX = e.changedTouches[0].clientX;
+    toqueIniciado = false;
+
+    const fimY =
+        e.changedTouches[0].clientY;
+
+    const fimX =
+        e.changedTouches[0].clientX;
 
     const movimentoY = fimY - inicioY;
     const movimentoX = fimX - inicioX;
 
+    /* Ignora gestos muito pequenos */
+
     if (Math.abs(movimentoY) < 50) return;
 
-    if (Math.abs(movimentoX) >
-        Math.abs(movimentoY)) return;
+    /* Ignora movimentos predominantemente horizontais */
+
+    if (
+        Math.abs(movimentoX) >
+        Math.abs(movimentoY)
+    ) return;
 
     if (movimentoY < 0) {
+
+        /* Arrastou para cima:
+           foto desliza para a DIREITA */
+
         trocarFoto(1);
+
     } else {
+
+        /* Arrastou para baixo:
+           foto desliza para a ESQUERDA */
+
         trocarFoto(-1);
     }
 
 }, { passive: true });
 
-/* X volta à primeira tela */
+imagens.addEventListener("touchcancel", () => {
+    toqueIniciado = false;
+});
+
+/* X volta diretamente à primeira tela */
 
 function fecharIdentidade() {
     if (animando) return;
 
     atual = 0;
     identidadeAberta = false;
+    toqueIniciado = false;
 
     imagens.classList.remove("identidade");
 
@@ -392,7 +503,7 @@ function fecharIdentidade() {
     atualizarDecorativos("inicio");
 }
 
-/* Efeito cinza nos outros botões */
+/* Efeito cinza apenas nos outros botões */
 
 document.querySelectorAll(".botao").forEach(botao => {
 
@@ -407,13 +518,19 @@ document.querySelectorAll(".botao").forEach(botao => {
     });
 
     ["pointercancel", "pointerleave"].forEach(evento => {
+
         botao.addEventListener(evento, () => {
             botao.classList.remove("pressionado");
         });
+
     });
 });
 
+/* Inicia na primeira tela */
+
 atualizarDecorativos("inicio");
+
+/* Impede arrastar as imagens como arquivos */
 
 document.addEventListener("dragstart", e => {
     e.preventDefault();
