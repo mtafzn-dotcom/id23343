@@ -49,50 +49,48 @@ html, body {
 
 .foto-nova {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+    inset: 0;
     height: 100%;
     object-fit: fill;
     z-index: 2;
 }
 
-/* Animações */
+/* Animação horizontal */
 
-@keyframes sairCima {
-    from { transform: translateY(0); }
-    to { transform: translateY(-100%); }
+@keyframes sairDireita {
+    from { transform: translateX(0); }
+    to { transform: translateX(100%); }
 }
 
-@keyframes entrarBaixo {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
+@keyframes entrarEsquerda {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
 }
 
-@keyframes sairBaixo {
-    from { transform: translateY(0); }
-    to { transform: translateY(100%); }
+@keyframes sairEsquerda {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
 }
 
-@keyframes entrarCima {
-    from { transform: translateY(-100%); }
-    to { transform: translateY(0); }
+@keyframes entrarDireita {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
 }
 
-.saindo-cima {
-    animation: sairCima 0.4s ease-in-out forwards;
+.saindo-direita {
+    animation: sairDireita 0.4s ease-in-out forwards;
 }
 
-.entrando-baixo {
-    animation: entrarBaixo 0.4s ease-in-out forwards;
+.entrando-esquerda {
+    animation: entrarEsquerda 0.4s ease-in-out forwards;
 }
 
-.saindo-baixo {
-    animation: sairBaixo 0.4s ease-in-out forwards;
+.saindo-esquerda {
+    animation: sairEsquerda 0.4s ease-in-out forwards;
 }
 
-.entrando-cima {
-    animation: entrarCima 0.4s ease-in-out forwards;
+.entrando-direita {
+    animation: entrarDireita 0.4s ease-in-out forwards;
 }
 
 /* Botões */
@@ -109,7 +107,7 @@ html, body {
     -webkit-tap-highlight-color: transparent;
 }
 
-/* Efeito cinza nos botões */
+/* Efeito cinza */
 
 .botao::after {
     content: "";
@@ -134,7 +132,7 @@ html, body {
     height: 5.5%;
 }
 
-/* Carteira de Documentos */
+/* Carteira */
 
 .cliqueCarteira {
     left: 6%;
@@ -144,7 +142,7 @@ html, body {
     display: none;
 }
 
-/* Setinha clicável, sem efeito cinza */
+/* Setinha sem efeito cinza */
 
 .seta {
     position: absolute;
@@ -171,8 +169,6 @@ html, body {
     z-index: 6;
 }
 
-/* Botões decorativos */
-
 .decorativo {
     display: none;
 }
@@ -189,8 +185,6 @@ html, body {
              draggable="false"
              alt="Simulação escolar">
     </div>
-
-    <!-- Botões que funcionam -->
 
     <div class="botao cliqueMenu"
          onclick="abrirCarteira()"></div>
@@ -234,9 +228,6 @@ html, body {
 </div>
 
 <script>
-
-/* Fotos da identidade */
-
 const fotos = [
     "foto3a.jpg",
     "foto3b.jpg",
@@ -262,16 +253,17 @@ const fechar = document.querySelector(".fechar");
 const decorativos =
     document.querySelectorAll(".decorativo");
 
-/* Atualiza os botões decorativos */
+/* Botões decorativos */
 
 function atualizarDecorativos(tela) {
     decorativos.forEach(botao => {
         botao.style.display =
-            botao.dataset.tela === tela ? "block" : "none";
+            botao.dataset.tela === tela
+            ? "block" : "none";
     });
 }
 
-/* Abre Carteira de Documentos */
+/* Abre Carteira */
 
 function abrirCarteira() {
     identidadeAberta = false;
@@ -304,7 +296,7 @@ function abrirIdentidade() {
     atualizarDecorativos("identidade");
 }
 
-/* Troca de foto com animação */
+/* Troca de foto horizontal */
 
 function trocarFoto(direcao) {
 
@@ -324,21 +316,20 @@ function trocarFoto(direcao) {
     imagens.appendChild(nova);
 
     if (direcao === 1) {
-        foto.classList.add("saindo-cima");
-        nova.classList.add("entrando-baixo");
+        foto.classList.add("saindo-direita");
+        nova.classList.add("entrando-esquerda");
     } else {
-        foto.classList.add("saindo-baixo");
-        nova.classList.add("entrando-cima");
+        foto.classList.add("saindo-esquerda");
+        nova.classList.add("entrando-direita");
     }
 
     nova.addEventListener("animationend", () => {
-
         atual = proxima;
         foto.src = fotos[atual];
 
         foto.classList.remove(
-            "saindo-cima",
-            "saindo-baixo"
+            "saindo-direita",
+            "saindo-esquerda"
         );
 
         nova.remove();
@@ -347,7 +338,7 @@ function trocarFoto(direcao) {
     }, { once: true });
 }
 
-/* Detecta o gesto de arrastar */
+/* Gesto de arrastar para cima ou baixo */
 
 imagens.addEventListener("touchstart", e => {
 
@@ -384,7 +375,6 @@ imagens.addEventListener("touchend", e => {
 /* X volta à primeira tela */
 
 function fecharIdentidade() {
-
     if (animando) return;
 
     atual = 0;
@@ -402,7 +392,7 @@ function fecharIdentidade() {
     atualizarDecorativos("inicio");
 }
 
-/* Efeito cinza nos botões, menos na seta */
+/* Efeito cinza nos outros botões */
 
 document.querySelectorAll(".botao").forEach(botao => {
 
@@ -416,26 +406,18 @@ document.querySelectorAll(".botao").forEach(botao => {
         }, 150);
     });
 
-    botao.addEventListener("pointercancel", () => {
-        botao.classList.remove("pressionado");
+    ["pointercancel", "pointerleave"].forEach(evento => {
+        botao.addEventListener(evento, () => {
+            botao.classList.remove("pressionado");
+        });
     });
-
-    botao.addEventListener("pointerleave", () => {
-        botao.classList.remove("pressionado");
-    });
-
 });
 
-/* Ativa os botões iniciais */
-
 atualizarDecorativos("inicio");
-
-/* Impede arrastar imagens */
 
 document.addEventListener("dragstart", e => {
     e.preventDefault();
 });
-
 </script>
 
 </body>
