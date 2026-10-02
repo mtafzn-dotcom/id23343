@@ -63,6 +63,12 @@ body {
     opacity: 1;
 }
 
+/* Setinha SEM efeito cinza */
+.seta::after,
+.seta.pressionado::after {
+    display: none !important;
+}
+
 /* Primeira tela */
 .cliqueMenu {
     left: 7%;
@@ -80,7 +86,7 @@ body {
     display: none;
 }
 
-/* Setinha */
+/* Setinha da identidade */
 .seta {
     right: 13%;
     bottom: 11%;
@@ -89,7 +95,7 @@ body {
     display: none;
 }
 
-/* X */
+/* X para voltar à primeira tela */
 .fechar {
     top: 3%;
     right: 3%;
@@ -158,6 +164,8 @@ body {
 </div>
 
 <script>
+
+/* Fotos da identidade */
 const fotos = [
     "foto3a.jpg",
     "foto3b.jpg",
@@ -226,8 +234,8 @@ function fecharIdentidade() {
     atualizarDecorativos("inicio");
 }
 
-/* Efeito de toque em todos os botões */
-document.querySelectorAll(".botao").forEach(botao => {
+/* Efeito de toque, EXCETO nas setinhas */
+document.querySelectorAll(".botao:not(.seta)").forEach(botao => {
 
     botao.addEventListener("pointerdown", () => {
         botao.classList.add("pressionado");
@@ -255,6 +263,7 @@ atualizarDecorativos("inicio");
 document.addEventListener("dragstart", e => {
     e.preventDefault();
 });
+
 </script>
 
 </body>
